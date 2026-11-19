@@ -55,7 +55,7 @@ dkms.conf
 *.dwo
 
 # build 
-/co
+co
 
 # C notes for begineers
 notes.md
