@@ -5,6 +5,7 @@
 #include <sys/stat.h>
 
 #include "category.h"
+#include "mover.h"
 #include "scan.h"
 
 int scan_folder(const char *path) {
@@ -38,7 +39,13 @@ int scan_folder(const char *path) {
 
     const char *ext = take_extension(entry->d_name);
     const char *category = search_category(ext);
-    printf("[DRY-RUN] %s -> %s/%s\n", entry->d_name, category, entry->d_name);
+    const int dry_run = 0;
+
+    if (dry_run) {
+      printf("[DRY-RUN] %s -> %s/%s\n", entry->d_name, category, entry->d_name);
+    } else {
+      move_file(path, entry->d_name, category);
+    }
   }
 
   closedir(dir);
