@@ -38,7 +38,7 @@ int scan_folder(const char *path) {
 
     const char *ext = take_extension(entry->d_name);
     const char *category = search_category(ext);
-    printf("%s / %s / %s\n", entry->d_name, ext, category);
+    printf("[DRY-RUN] %s -> %s/%s\n", entry->d_name, category, entry->d_name);
   }
 
   closedir(dir);
