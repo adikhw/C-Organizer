@@ -27,7 +27,8 @@ static int ensure_dir_exists(const char *path) {
   return 0;
 }
 
-int move_file(const char *base_path, const char *name, const char *category) {
+int move_file(const char *base_path, const char *name, const char *category,
+              int verbose) {
   char target_dir[PATH_MAX];
   char old_path[PATH_MAX];
   char new_path[PATH_MAX];
@@ -58,6 +59,10 @@ int move_file(const char *base_path, const char *name, const char *category) {
   if (rename(old_path, new_path) != 0) {
     perror("rename");
     return 1;
+  }
+
+  if (verbose) {
+    printf("moving %s -> %s/%s\n", name, category, name);
   }
 
   return 0;
