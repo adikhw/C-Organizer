@@ -9,7 +9,7 @@
 #include "scan.h"
 #include "util.h"
 
-int scan_folder(const char *path) {
+int scan_folder(const char *path, int dry_run, int verbose) {
   DIR *dir = opendir(path);
   if (dir == NULL) {
     perror("opendir");
@@ -46,11 +46,10 @@ int scan_folder(const char *path) {
 
     const char *ext = take_extension(entry->d_name);
     const char *category = search_category(ext);
-    const int dry_run = 0;
 
     if (dry_run) {
       printf("[DRY-RUN] %s -> %s/%s\n", entry->d_name, category, entry->d_name);
-    } else if (move_file(path, entry->d_name, category) != 0) {
+    } else if (move_file(path, entry->d_name, category, verbose) != 0) {
       had_error = 1;
     }
   }
