@@ -12,4 +12,10 @@ $(TARGET): $(SRC) $(HDR)
 clean:
 	rm -f $(TARGET)
 
-.PHONY: all clean
+test: $(TARGET)
+	bash tests/run_tests.sh
+
+install: $(TARGET)
+	install -Dm755 $(TARGET) $(HOME)/.local/bin/$(TARGET)
+
+.PHONY: all clean test install
