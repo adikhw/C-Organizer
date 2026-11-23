@@ -40,10 +40,13 @@ const char *take_extension(const char *file_name) {
 }
 
 const char *search_category(const char *ext) {
+    if (ext == NULL || ext[0] == '\0') {
+        return "Others";
+    }
     for (size_t i = 0; i < sizeof(rules) / sizeof(rules[0]); i++) {
         if (strcasecmp(ext, rules[i].ext) == 0) {
             return rules[i].category;
         }
     }
-    return "Other";
+    return "Others";
 }
