@@ -1,6 +1,6 @@
 CC      = gcc
 CFLAGS  = -std=gnu11 -Wall -Wextra -g -fsanitize=address
-SRC     = src/main.c src/scan.c src/category.c src/mover.c
+SRC     = src/main.c src/scan.c src/category.c src/mover.c src/util.c
 HDR     = $(wildcard src/*.h)
 TARGET  = co
 

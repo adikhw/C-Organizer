@@ -7,6 +7,7 @@
 #include "category.h"
 #include "mover.h"
 #include "scan.h"
+#include "util.h"
 
 int scan_folder(const char *path) {
   DIR *dir = opendir(path);
@@ -14,18 +15,24 @@ int scan_folder(const char *path) {
     perror("opendir");
     return 1;
   }
+
+  int had_error = 0;
+
   while (1) {
     struct dirent *entry = readdir(dir);
     if (entry == NULL) {
       break;
     }
 
-    if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0) {
+    if (entry->d_name[0] == '.') {
       continue;
     }
 
     char full_path[PATH_MAX];
-    snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
+    if (join_path(full_path, sizeof(full_path), path, entry->d_name) != 0) {
+      fprintf(stderr, "path too long, skipped: %s/%s\n", path, entry->d_name);
+      continue;
+    }
 
     struct stat st;
     if (stat(full_path, &st) != 0) {
@@ -43,11 +50,12 @@ int scan_folder(const char *path) {
 
     if (dry_run) {
       printf("[DRY-RUN] %s -> %s/%s\n", entry->d_name, category, entry->d_name);
-    } else {
-      move_file(path, entry->d_name, category);
+    } else if (move_file(path, entry->d_name, category) != 0) {
+      had_error = 1;
     }
   }
 
   closedir(dir);
-  return 0;
+
+  return had_error ? 1 : 0;
 }

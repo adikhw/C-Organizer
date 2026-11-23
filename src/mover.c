@@ -4,6 +4,9 @@
 #include <limits.h>
 #include <stdio.h>
 #include <sys/stat.h>
+#include <unistd.h>
+
+#include "util.h"
 
 static int ensure_dir_exists(const char *path) {
   if (mkdir(path, 0755) == 0) {
@@ -15,6 +18,12 @@ static int ensure_dir_exists(const char *path) {
     return 1;
   }
 
+  struct stat st;
+  if (stat(path, &st) != 0 || !S_ISDIR(st.st_mode)) {
+    fprintf(stderr, "%s already exists but is not a directory\n", path);
+    return 1;
+  }
+
   return 0;
 }
 
@@ -22,10 +31,8 @@ int move_file(const char *base_path, const char *name, const char *category) {
   char target_dir[PATH_MAX];
   char old_path[PATH_MAX];
   char new_path[PATH_MAX];
-  int n;
 
-  n = snprintf(target_dir, sizeof(target_dir), "%s/%s", base_path, category);
-  if (n < 0 || (size_t)n >= sizeof(target_dir)) {
+  if (join_path(target_dir, sizeof(target_dir), base_path, category) != 0) {
     fprintf(stderr, "path too long, skipped: %s/%s\n", base_path, category);
     return 1;
   }
@@ -33,16 +40,19 @@ int move_file(const char *base_path, const char *name, const char *category) {
     return 1;
   }
 
-  n = snprintf(old_path, sizeof(old_path), "%s/%s", base_path, name);
-  if (n < 0 || (size_t)n >= sizeof(old_path)) {
+  if (join_path(old_path, sizeof(old_path), base_path, name) != 0) {
     fprintf(stderr, "path too long, skipped: %s/%s\n", base_path, name);
     return 1;
   }
 
-  n = snprintf(new_path, sizeof(new_path), "%s/%s", target_dir, name);
-  if (n < 0 || (size_t)n >= sizeof(new_path)) {
+  if (join_path(new_path, sizeof(new_path), target_dir, name) != 0) {
     fprintf(stderr, "path too long, skipped: %s/%s\n", target_dir, name);
     return 1;
+  }
+
+  if (access(new_path, F_OK) == 0) {
+    printf("SKIP: %s already exists in %s\n", name, category);
+    return 0;
   }
 
   if (rename(old_path, new_path) != 0) {
