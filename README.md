@@ -26,7 +26,7 @@ Pastikan komputer Anda memiliki compiler C (seperti GCC) dan `make`.
 
 1. **Clone repositori ini**:
    ```bash
-   git clone https://github.com/username/C-Organizer.git
+   git clone https://github.com/adikhw/C-Organizer.git
    cd C-Organizer
    ```
 
